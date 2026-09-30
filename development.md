@@ -1,169 +1,129 @@
-# Development Guide & Implementation Plan — STAHP IT!
-**A Native macOS Task-Based Stopwatch, Menu Bar Utility, and Floating HUD**
+# Development Guide & Technical Specifications — STAHP IT!
+**A Native macOS Task-Based Stopwatch, Menu Bar Utility, and OLED Dynamic Island HUD**
 
 ---
 
 ## 1. Project Overview & Vision
 
-**STAHP IT!** is a high-precision, distraction-free macOS task timer and stopwatch designed for developers, designers, and power users. It allows users to track billable or focused task time with zero friction through two primary lightweight interfaces:
-1. **Menu Bar Status Item & Popover**: Compact, live-ticking status bar with quick actions.
-2. **Floating Overlay HUD (PiP)**: A draggable, frosted-glass (Liquid Material) always-on-top pill that floats across all macOS spaces and full-screen apps without stealing keyboard focus.
-3. **Session & History Manager**: Complete timeline of recorded task sessions with tagging, notes, and CSV/Markdown export capabilities.
+**STAHP IT!** is a high-precision, distraction-free macOS task stopwatch and Dynamic Island utility designed for developers, designers, and power users. It delivers real-time time awareness with zero friction through modular interfaces:
+
+1. **MacBook Pro Dynamic Island Notch HUD**: Symmetrical, hardware-calibrated wings flanking the camera notch with pure `#000000` zero-nit OLED/Liquid Retina XDR true black and hover-only aurora light bloom.
+2. **Magnetic Edge Snapping & Docking**: Multi-anchor docking supporting vertical edge pills (left/right display edges), horizontal docks (top/bottom), and free-floating mode with fluid `NSAnimationContext` easing.
+3. **Menu Bar Status Item & Popover**: Compact status item with customizable display modes (Notch Only, Menu Bar Only, or Both).
+4. **Active Frontmost Application Tracking**: Real-time awareness of active macOS applications (Xcode, Figma, Safari, etc.) paired directly with task sessions.
+5. **Session Persistence & Auto-Resume**: Crash-resilient state snapshots auto-saved every 4 seconds and upon app exit/sleep, enabling automatic session resumption on launch.
+6. **Session & History Manager**: Filterable history timeline with formula-injection-safe CSV and Markdown table export.
 
 ---
 
-## 2. User Journey & App Workflow
-
-```
-                   ┌──────────────────────────────────────────────┐
-                   │             Launch STAHP IT!                 │
-                   │ (Appears in Menu Bar & Optional Floating HUD)│
-                   └──────────────────────┬───────────────────────┘
-                                          │
-                                          ▼
-     ┌────────────────────────────────────────────────────────────────────────┐
-     │                             Active Mode                                │
-     │                                                                        │
-     │  ┌───────────────────────────┐          ┌───────────────────────────┐  │
-     │  │      Menu Bar Popover     │          │    Floating HUD Pill      │  │
-     │  │  - Select or create task  │ ◄──────► │  - Glance live timer      │  │
-     │  │  - Quick Play / Pause     │ (Synced) │  - Hover: Play/Pause/Done │  │
-     │  │  - View today's summary   │          │  - Drag to reposition     │  │
-     │  │  - Toggle Overlay         │          │  - Minimize or Lock       │  │
-     │  └───────────────────────────┘          └───────────────────────────┘  │
-     └────────────────────────────────────┬───────────────────────────────────┘
-                                          │
-                        Stop / Finish Session Triggered
-                                          │
-                                          ▼
-     ┌────────────────────────────────────────────────────────────────────────┐
-     │                       Session Completion Modal                         │
-     │  - Review elapsed duration & task tag                                  │
-     │  - Add optional session notes / tags                                   │
-     │  - Save session to persistent storage or discard                       │
-     └────────────────────────────────────┬───────────────────────────────────┘
-                                          │
-                                          ▼
-     ┌────────────────────────────────────────────────────────────────────────┐
-     │                      History & Export Dashboard                        │
-     │  - Daily / Weekly time breakdowns by task                              │
-     │  - Edit / Delete historical session logs                               │
-     │  - Export logs to CSV / JSON / Markdown worklog (Linear/Jira/Slack)    │
-     └────────────────────────────────────────────────────────────────────────┘
-```
-
-### Detailed Workflow States:
-1. **Quick Start**:
-   - User clicks Menu Bar icon or uses global hotkey (`⌥ ⇧ Space`).
-   - If no task is selected, timer starts with default task (e.g. *"General Work"*) or prompts for quick task name entry.
-2. **Focus / Floating Overlay**:
-   - Floating HUD pill docks to screen corner with ultra-thin frosted glass effect.
-   - When active, displays task color indicator, task title, and monospaced ticking timer.
-   - Controls reveal on hover: `Pause/Resume`, `Finish Task`, `Cycle Task`, `Snap/Dock`.
-   - Supports "Click-Through / Lock" mode for unobtrusive ambient time awareness.
-3. **Task Switching**:
-   - One-click task switching: stops and saves current task segment, immediately begins tracking the new task.
-4. **Completion & Archival**:
-   - On completion, session is committed to local storage with start/end timestamps and duration.
-
----
-
-## 3. Architecture & Technical Specifications
+## 2. Architecture & Technical Specifications
 
 ### Tech Stack
-- **Language**: Swift 6
-- **UI Frameworks**: SwiftUI + AppKit (`NSPanel`, `NSStatusItem`, `NSApplicationPresentationOptions`)
-- **Persistence**: Lightweight JSON File Store / SwiftData with Codable models
-- **Target OS**: macOS 14.0+ (Sonoma, Sequoia and newer)
+- **Language**: Swift 6.0
+- **UI Frameworks**: SwiftUI + AppKit (`NSPanel`, `NSStatusItem`, `NSAnimationContext`, `CAMediaTimingFunction`)
+- **Graphics Engine**: CoreGraphics (`generate_icon.swift`)
+- **Display Pipeline**: Apple ProMotion 60–120Hz refresh cadence
+- **Persistence**: Lightweight JSON File Store with `Codable` models
+- **Target OS**: macOS 14.0+ (Sonoma, Sequoia) — Apple Silicon (M1/M2/M3/M4) & Intel
 
-### Core Modules
+---
+
+## 3. Codebase Structure & Module Map
 
 ```
 STAHP IT!/
-├── Package.swift / Project Settings
-├── Sources/
-│   ├── App/
-│   │   ├── StahpItApp.swift          // App lifecycle, menu bar & window coordinators
-│   │   ├── AppState.swift            // Central observable view-model / coordinator
-│   │   └── HotkeyManager.swift       // Global keyboard shortcuts (Carbon / NSEvent)
-│   ├── Engine/
-│   │   ├── StopwatchEngine.swift     // Drift-proof reference timestamp timer engine
-│   │   └── TimeFormatter.swift       // Monospaced and human-readable time formatters
-│   ├── Models/
-│   │   ├── TaskItem.swift            // Task model (id, name, color, icon, target)
-│   │   └── TimeSession.swift         // Session model (id, taskId, start, end, duration, notes)
-│   ├── Storage/
-│   │   ├── StorageManager.swift      // Persistence manager with auto-save
-│   │   └── Exporters.swift           // CSV & Markdown export generators
-│   └── Views/
-│       ├── MenuBar/
-│       │   ├── MenuBarView.swift     // Popover content (active controls, quick task list)
-│       │   └── MenuBarStatusView.swift// Dynamic status bar title & icon
-│       ├── Overlay/
-│       │   ├── OverlayPanel.swift    // Specialized NSPanel (floating, non-activating)
-│       │   └── OverlayHUDView.swift  // Frosted glass interactive pill UI
-│       └── Dashboard/
-│           ├── HistoryView.swift     // Historical sessions & time breakdown
-│           ├── TaskManagerView.swift // Task creator, color picker, targets
-│           └── SettingsView.swift    // Display preferences, hotkeys, startup settings
+├── Package.swift                             # Swift Package Manager manifest
+├── generate_icon.swift                       # CoreGraphics programmatic macOS AppIcon generator
+├── run.sh                                    # Release build, icon compilation & launch script
+├── README.md                                 # User & developer documentation
+├── LICENSE                                   # MIT License
+└── Sources/
+    ├── App/
+    │   ├── StahpItApp.swift                  # Main App lifecycle & MenuBarExtra dynamic insertion
+    │   ├── AppState.swift                    # Central @MainActor state coordinator & persistence
+    │   └── HotkeyManager.swift               # Carbon global keyboard shortcut listener
+    ├── Engine/
+    │   ├── StopwatchEngine.swift             # High-precision 60-120Hz ProMotion timer engine
+    │   ├── TimeFormatter.swift               # Stopwatch, vertical pill & duration string formatters
+    │   └── AppleTheme.swift                  # Apple HIG design tokens, fluid springs & notch geometry
+    ├── Models/
+    │   ├── TaskItem.swift                    # Task category schema & color hex extensions
+    │   └── TimeSession.swift                 # Historical session & active snapshot schema
+    ├── Storage/
+    │   └── StorageManager.swift              # JSON store, preferences schema & CSV/MD export
+    └── Views/
+        ├── MenuBar/
+        │   └── MenuBarView.swift             # Native macOS Menu Bar status item view
+        ├── Overlay/
+        │   ├── OverlayPanel.swift            # AppKit NSPanel magnetic edge snapping & drag controller
+        │   └── OverlayHUDView.swift          # OLED Notch Dynamic Island & Edge Dock Pills
+        └── Dashboard/
+            ├── SettingsView.swift            # Tabbed Settings dialog (General, Notch, Categories, Hotkeys, Data)
+            ├── SettingsWindowController.swift # NSWindowController for standalone Settings window
+            ├── DashboardWindowView.swift      # NavigationSplitView Dashboard container
+            ├── HistoryView.swift              # Session history log & export
+            ├── TaskManagerView.swift          # Category list & editor
+            └── SessionCompletionSheet.swift   # Finish session notes sheet
 ```
 
 ---
 
-## 4. Key Implementation Nuances
+## 4. Key Architectural Implementations
 
-### 1. Drift-Proof Timing Engine
-To prevent timer freeze/drift during background throttling, sleep, or intensive CPU spikes:
-- Use reference timestamp calculation:
+### 1. Drift-Proof 60–120Hz Timing Engine (`StopwatchEngine.swift`)
+- **Reference Timestamp Calculations**: Prevents timer drift during background throttling or thread sleeps:
   $$\text{Elapsed} = \text{Date.now.timeIntervalSince}(\text{startTime}) + \text{accumulatedDuration}$$
-- UI ticker scheduled via `Timer.publish(every: 0.05, on: .main, in: .common)` so menu bar and overlay update smoothly without lag when interacting with menus.
+- **ProMotion Synchronized Cadence**: UI tick publisher scheduled on the `.common` run loop mode (`Timer.publish(every: 1.0/60.0)`), maintaining fluid 60–120Hz display refresh.
 
-### 2. Floating Overlay (`NSPanel`) Configuration
-- `styleMask: [.borderless, .nonactivatingPanel]` (prevents taking focus away from user's active editor/terminal).
-- `level: .floating` or `.statusBar` (stays above standard application windows).
-- `collectionBehavior: [.canJoinAllSpaces, .fullScreenAuxiliary]` (remains visible across virtual desktops and full-screen apps).
-- `isMovableByWindowBackground = true` (draggable anywhere on the pill).
-- `backgroundColor = .clear` with SwiftUI `.background(.ultraThinMaterial)`.
+### 2. OLED & Liquid Retina XDR Notch Calibration (`OverlayHUDView.swift`, `AppleTheme.swift`)
+- **Zero-Nit True Black (`#000000`)**: Mini-LED local dimming zones and OLED pixels remain completely extinguished ($0$ nits) behind the notch wings, preventing gray backlight blooming against the MacBook bezel.
+- **Symmetrical Responsive Geometry ($W_{\text{left}} = W_{\text{right}}$)**: Left wing terminates flush at the hardware camera housing, and the right stopwatch wing begins flush from the right boundary. Symmetrical padding expands dynamically based on content length.
+- **Hover-Only Light Contour (`NotchLightContourView`)**: Ambient Apple Intelligence aurora glow contour stays completely off during tracking and only blooms with smooth rotation on mouse hover.
 
-### 3. Agent Mode Configuration
-- `LSUIElement = true` configured in `Info.plist` so the app runs natively as a lightweight Menu Bar status utility with no clutter in the macOS Dock or `⌘ Tab` switcher (with toggleable option in settings).
+### 3. Magnetic Multi-Anchor Docking (`OverlayPanel.swift`)
+- **`NSPanel` Configuration**: `styleMask: [.borderless, .nonactivatingPanel]`, `level: .statusBar`, and `collectionBehavior: [.canJoinAllSpaces, .fullScreenAuxiliary]`.
+- **Fluid `NSAnimationContext` Easing**: Snapping between screen anchors animates with `.easeInEaseOut` timing over $0.32\text{s}$ for smooth gliding across displays.
 
----
+### 4. App Presentation Location Modes (`appDisplayLocation`)
+- **Notch HUD Only**: Displays the app exclusively on the MacBook Notch Dynamic Island (or magnetic screen edge dock). The top menu bar icon is removed via `MenuBarExtra(isInserted:)`.
+- **Menu Bar Only**: Displays the app exclusively as a macOS top status bar item. The Notch overlay is hidden.
+- **Both**: Displays the app simultaneously on both interfaces.
 
-## 5. Step-by-Step Implementation Plan
+### 5. Automatic Session State Persistence (`ActiveSessionSnapshot`)
+- **Crash & Restart Resilience**: Saves live active session snapshots every 4 seconds and upon app termination (`willTerminateNotification` / `willSleepNotification`).
+- **Seamless Resume**: Relaunching the app remembers your exact elapsed time, active task category, and recorded lap splits.
+- **Auto-Resume Running Timers**: If the stopwatch was actively tracking before quitting, it immediately resumes ticking on app launch.
 
-### Phase 1: Foundation & Data Layer
-- [ ] Initialize Swift Package / macOS App structure.
-- [ ] Implement `TaskItem` and `TimeSession` models with Codable support.
-- [ ] Implement `StorageManager` with robust local JSON persistence and default starter tasks.
-- [ ] Implement `StopwatchEngine` with drift-proof reference timing, state transitions (`idle`, `running`, `paused`), and lap/session recording.
-
-### Phase 2: Menu Bar Integration
-- [ ] Implement `NSStatusItem` / `MenuBarExtra` with dynamic live ticking digits.
-- [ ] Create `MenuBarView` popover with active task display, start/pause/stop buttons, task switcher, and quick-add task field.
-- [ ] Add compact mode (icon-only or time-only) for notch/crowded menu bars.
-
-### Phase 3: Floating HUD Overlay
-- [ ] Implement `OverlayPanel` (`NSPanel` subclass configured for floating HUD behavior).
-- [ ] Build `OverlayHUDView` with Liquid Material (ultra-thin glass), drag handle, monospaced timer, and hover action controls.
-- [ ] Implement HUD modes: Standard Pill, Expanded Controls, and Locked / Click-Through mode.
-- [ ] Add smooth show/hide transitions and position persistence.
-
-### Phase 4: Session History & Task Management
-- [ ] Build `HistoryView` displaying logged sessions grouped by day/task.
-- [ ] Add Session Note editing and session deletion.
-- [ ] Implement export feature: Export to CSV and formatted Markdown worklog.
-- [ ] Build `TaskManagerView` to create, edit, color-code, and archive tasks.
-
-### Phase 5: Global Shortcuts & Polish
-- [ ] Implement global hotkeys (`⌥ ⇧ Space` to toggle timer, `⌥ ⇧ O` to toggle overlay).
-- [ ] Add haptic/audio cues on start, pause, and milestone completion.
-- [ ] Polish animations, color palette, dark/light mode responsiveness, and verify builds.
+### 6. Security & Export Defense
+- **CSV Formula Injection Mitigation**: Sanitizes cell prefixes (`=`, `+`, `-`, `@`) with prepended `'` escape markers before generating CSV files.
+- **Markdown Pipe Escaping**: Escapes `|` characters in task titles and notes to prevent broken Markdown tables.
 
 ---
 
-## 6. Verification & Acceptance Criteria
-1. **Timing Accuracy**: Timer matches wall-clock time across system sleep and wake cycles.
-2. **Menu Bar Responsiveness**: Popover opens immediately with smooth live seconds update.
-3. **Overlay Behavior**: Draggable across monitors and spaces; remains on top without stealing keyboard focus.
-4. **Data Integrity**: All task sessions persist across app restarts and export cleanly to CSV/Markdown.
+## 5. Completed Milestones (v0.5)
+
+- [x] High-precision 60–120Hz ProMotion stopwatch timing engine with lap recording.
+- [x] Liquid Retina XDR / OLED True Black `#000000` MacBook Notch Dynamic Island with symmetrical responsive wings.
+- [x] Hover-only Apple Intelligence aurora light bloom contour.
+- [x] Multi-anchor magnetic edge snapping (Top Notch, Left/Right Vertical Pills, Bottom Docks, Free Float).
+- [x] Exclusive App Display Location settings (Notch Only vs Menu Bar Only vs Both).
+- [x] Crash-resilient session persistence and auto-resume on relaunch.
+- [x] Custom task category manager with custom colors, SF Symbols, and target goals.
+- [x] Frontmost active application tracking & customizable HUD display modes.
+- [x] Formula-safe CSV and Markdown table session history export.
+- [x] Programmatic CoreGraphics designer macOS app icon (`generate_icon.swift`).
+- [x] GitHub repository setup and **v0.5** release published with binary bundle assets.
+
+---
+
+## 6. Build & Packaging Instructions
+
+```bash
+# Compile and launch the release bundle
+chmod +x run.sh
+./run.sh
+
+# Programmatically generate AppIcon.icns
+swift generate_icon.swift
+iconutil -c icns AppIcon.iconset -o AppIcon.icns
+```
