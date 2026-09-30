@@ -1,0 +1,15 @@
+# Xcode & Swift Package Manager
+.DS_Store
+.build/
+build/
+AppIcon.iconset/
+Packages/
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+
+# Artifacts & Temporary Files
+.system_generated/
+*.swp
+*~
