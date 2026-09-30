@@ -103,7 +103,12 @@ public final class OverlayWindowController: ObservableObject {
     public func updatePosition(appState: AppState) {
         guard let panel = panel else { return }
         let newFrame = calculateFrame(anchor: appState.storage.data.screenAnchor, appState: appState)
-        panel.setFrame(newFrame, display: true, animate: true)
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.32
+            context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            context.allowsImplicitAnimation = true
+            panel.animator().setFrame(newFrame, display: true)
+        }
     }
     
     public func snapToAnchor(_ anchor: ScreenAnchor, appState: AppState) {

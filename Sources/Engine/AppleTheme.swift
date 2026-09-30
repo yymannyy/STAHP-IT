@@ -18,11 +18,12 @@ public enum AppleTheme {
     public static let radiusSm: CGFloat = 8
     public static let radiusMd: CGFloat = 11
     public static let radiusLg: CGFloat = 18
-    // Modern Apple Spring Animation Presets (macOS 14+)
-    public static let springBouncy: Animation = .spring(.bouncy(duration: 0.36, extraBounce: 0.18))
-    public static let springSnappy: Animation = .spring(.snappy(duration: 0.28, extraBounce: 0.12))
-    public static let springSmooth: Animation = .spring(.smooth(duration: 0.32))
-    public static let springHover: Animation = .spring(.smooth(duration: 0.2))
+    // Modern Apple Fluid Spring Animation Presets (macOS 14+ / ProMotion Calibrated)
+    public static let springBouncy: Animation = .spring(response: 0.38, dampingFraction: 0.82)
+    public static let springSnappy: Animation = .spring(response: 0.28, dampingFraction: 0.86)
+    public static let springSmooth: Animation = .spring(response: 0.40, dampingFraction: 0.90)
+    public static let springHover: Animation = .spring(response: 0.26, dampingFraction: 0.88)
+    public static let springGentle: Animation = .spring(response: 0.48, dampingFraction: 0.92)
 }
 
 // Apple Press Micro-Interaction ButtonStyle

@@ -296,16 +296,16 @@ public struct OverlayHUDView: View {
                         .padding(.horizontal, 16)
                         .padding(.bottom, 12)
                         .transition(.asymmetric(
-                            insertion: .opacity.combined(with: .scale(scale: 0.96, anchor: .top)),
-                            removal: .opacity.combined(with: .scale(scale: 0.96, anchor: .top))
+                            insertion: .opacity.combined(with: .scale(scale: 0.98, anchor: .top)),
+                            removal: .opacity.combined(with: .scale(scale: 0.98, anchor: .top))
                         ))
                     }
                 }
             }
             .frame(width: islandW, height: currentH)
-            .animation(AppleTheme.springBouncy, value: isExpanded)
+            .animation(AppleTheme.springSmooth, value: isExpanded)
             .onHover { hovering in
-                withAnimation(AppleTheme.springBouncy) {
+                withAnimation(AppleTheme.springSmooth) {
                     viewState.isHovered = hovering
                 }
             }
@@ -630,10 +630,10 @@ private struct PulsingTaskDot: View {
                     .opacity(pulseState.pulseOpacity)
                     .onAppear {
                         withAnimation(
-                            .easeInOut(duration: 1.2)
+                            .easeInOut(duration: 1.6)
                             .repeatForever(autoreverses: true)
                         ) {
-                            pulseState.pulseScale = 1.6
+                            pulseState.pulseScale = 1.45
                             pulseState.pulseOpacity = 0.0
                         }
                     }
@@ -650,8 +650,8 @@ private struct PulsingTaskDot: View {
 private struct BouncyButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.92 : 1.0)
-            .animation(.spring(response: 0.2, dampingFraction: 0.65), value: configuration.isPressed)
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.spring(response: 0.24, dampingFraction: 0.84), value: configuration.isPressed)
     }
 }
 
@@ -684,10 +684,10 @@ private final class LightAnimState: ObservableObject {
     @Published var isBreathing: Bool = false
     
     func startAnimation() {
-        withAnimation(.linear(duration: 6.0).repeatForever(autoreverses: false)) {
+        withAnimation(.linear(duration: 8.0).repeatForever(autoreverses: false)) {
             rotationAngle = 360
         }
-        withAnimation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true)) {
+        withAnimation(.easeInOut(duration: 2.8).repeatForever(autoreverses: true)) {
             isBreathing = true
         }
     }
