@@ -174,6 +174,60 @@ private struct GeneralSettingsSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
+            SettingHeader(title: "App Presentation Location", subtitle: "Choose whether STAHP IT! appears exclusively on the Notch HUD, Menu Bar, or both.")
+            
+            GroupBox {
+                VStack(spacing: 12) {
+                    HStack(spacing: 10) {
+                        ForEach(AppDisplayLocation.allCases) { location in
+                            let isSelected = appState.storage.data.appDisplayLocation == location
+                            Button {
+                                withAnimation(AppleTheme.springSnappy) {
+                                    appState.setDisplayLocation(location)
+                                }
+                            } label: {
+                                VStack(spacing: 8) {
+                                    Image(systemName: location.iconName)
+                                        .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
+                                        .foregroundColor(isSelected ? AppleTheme.actionBlue : .secondary)
+                                    
+                                    Text(location.rawValue)
+                                        .font(.system(size: 11.5, weight: isSelected ? .semibold : .medium))
+                                        .foregroundColor(isSelected ? .primary : .secondary)
+                                        .multilineTextAlignment(.center)
+                                        .lineLimit(2)
+                                }
+                                .frame(maxWidth: .infinity, minHeight: 74)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .fill(isSelected ? AppleTheme.actionBlue.opacity(0.12) : Color.primary.opacity(0.04))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .stroke(isSelected ? AppleTheme.actionBlue.opacity(0.6) : Color.clear, lineWidth: 1.5)
+                                        )
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    
+                    Text(
+                        appState.storage.data.appDisplayLocation == .notchOnly
+                            ? "✨ Showing only on the MacBook Notch / screen edge. Menu Bar icon is hidden."
+                            : (appState.storage.data.appDisplayLocation == .menuBarOnly
+                                ? "🔝 Showing only in the top macOS Menu Bar. Notch overlay is hidden."
+                                : "🔲 Showing simultaneously on both the Notch HUD and top Menu Bar.")
+                    )
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, 4)
+                }
+                .padding(10)
+            }
+            
             SettingHeader(title: "General Preferences", subtitle: "Configure launch, menu bar display, and session completion workflow.")
             
             GroupBox {

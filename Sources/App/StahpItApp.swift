@@ -27,8 +27,21 @@ struct StahpItApp: App {
     @Environment(\.openWindow) private var openWindow
     
     var body: some Scene {
-        // Menu Bar Extra
-        MenuBarExtra {
+        // Menu Bar Extra (conditionally displayed based on AppDisplayLocation setting)
+        MenuBarExtra(
+            isInserted: Binding(
+                get: {
+                    appState.storage.data.appDisplayLocation == .menuBarOnly || appState.storage.data.appDisplayLocation == .both
+                },
+                set: { inserted in
+                    if inserted {
+                        appState.setDisplayLocation(appState.storage.data.appDisplayLocation == .notchOnly ? .both : .menuBarOnly)
+                    } else {
+                        appState.setDisplayLocation(.notchOnly)
+                    }
+                }
+            )
+        ) {
             MenuBarView(appState: appState)
         } label: {
             HStack(spacing: 5) {

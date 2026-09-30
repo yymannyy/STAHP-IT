@@ -48,6 +48,24 @@ public final class AppState: ObservableObject {
         
         setupActiveAppTracking()
         setupLifecycleObservers()
+        syncDisplayLocations()
+    }
+    
+    public func setDisplayLocation(_ location: AppDisplayLocation) {
+        storage.data.appDisplayLocation = location
+        storage.save()
+        syncDisplayLocations()
+    }
+    
+    public func syncDisplayLocations() {
+        switch storage.data.appDisplayLocation {
+        case .notchOnly:
+            isOverlayVisible = true
+        case .menuBarOnly:
+            isOverlayVisible = false
+        case .both:
+            isOverlayVisible = true
+        }
     }
     
     private func setupLifecycleObservers() {
