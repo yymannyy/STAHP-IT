@@ -198,7 +198,7 @@ public struct OverlayHUDView: View {
                                         .font(.system(size: 12, weight: .bold, design: .monospaced))
                                         .monospacedDigit()
                                         .contentTransition(.numericText(value: appState.engine.elapsedTime))
-                                        .foregroundColor(isRunning ? .white : Color(hex: "#A1A1A6")!)
+                                        .foregroundColor(isRunning ? .white : (Color(hex: "#A1A1A6") ?? .secondary))
                                 }
                             }
                         }
@@ -717,8 +717,8 @@ private struct NotchLightContourView: View {
                     AngularGradient(
                         gradient: Gradient(colors: [
                             taskColor.opacity(isRunning ? (animState.isBreathing ? 0.8 : 0.4) : 0.25),
-                            Color(hex: "#38BDF8")!.opacity(isRunning ? 0.6 : 0.15),
-                            Color(hex: "#EC4899")!.opacity(isRunning ? 0.5 : 0.1),
+                            (Color(hex: "#38BDF8") ?? .cyan).opacity(isRunning ? 0.6 : 0.15),
+                            (Color(hex: "#EC4899") ?? .pink).opacity(isRunning ? 0.5 : 0.1),
                             AppleTheme.actionBlue.opacity(isRunning ? 0.7 : 0.2),
                             taskColor.opacity(isRunning ? (animState.isBreathing ? 0.8 : 0.4) : 0.25)
                         ]),

@@ -63,7 +63,7 @@ public final class CategorySettingsViewState: ObservableObject {
         title = task.title
         selectedColorHex = task.colorHex
         selectedIcon = task.iconName
-        targetMinutes = task.targetMinutes != nil ? "\(task.targetMinutes!)" : ""
+        targetMinutes = task.targetMinutes.map { "\($0)" } ?? ""
         showingCreateCard = false
     }
 }
@@ -534,7 +534,7 @@ private struct CategoriesSettingsSection: View {
                                         )
                                         .scaleEffect(isSelected ? 1.18 : 1.0)
                                         .animation(AppleTheme.springSnappy, value: viewState.selectedColorHex)
-                                        .shadow(color: isSelected ? Color(hex: hex)!.opacity(0.6) : Color.clear, radius: 4)
+                                        .shadow(color: isSelected ? (Color(hex: hex) ?? Color.blue).opacity(0.6) : Color.clear, radius: 4)
                                         .onTapGesture {
                                             withAnimation(AppleTheme.springSnappy) {
                                                 viewState.selectedColorHex = hex

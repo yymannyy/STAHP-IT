@@ -27,6 +27,7 @@ cp "$DIR/AppIcon.icns" "$RESOURCES_DIR/AppIcon.icns"
 
 # Copy binary
 cp "$DIR/.build/release/StahpIt" "$MACOS_DIR/StahpIt"
+chmod +x "$MACOS_DIR/StahpIt"
 
 # Create Info.plist
 cat << 'EOF' > "$CONTENTS_DIR/Info.plist"
@@ -65,5 +66,11 @@ cat << 'EOF' > "$CONTENTS_DIR/Info.plist"
 EOF
 
 echo "STAHP IT! bundle created at: $APP_DIR"
+xattr -cr "$APP_DIR"
+codesign --force --deep --sign - "$APP_DIR"
+
 echo "Launching STAHP IT!..."
-open "$APP_DIR"
+killall StahpIt 2>/dev/null || true
+nohup "$MACOS_DIR/StahpIt" > /dev/null 2>&1 &
+disown
+echo "STAHP IT! launched successfully."

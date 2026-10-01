@@ -3,6 +3,7 @@ import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApp.setActivationPolicy(.accessory)
         let appState = AppState.shared
         
         // Restore active session state (or resume stopwatch) if previous session existed
@@ -13,6 +14,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         
         // Setup Carbon & Local Hotkeys
         HotkeyManager.shared.setup(appState: appState)
+    }
+    
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return false
     }
     
     func applicationWillTerminate(_ notification: Notification) {
@@ -27,27 +32,14 @@ struct StahpItApp: App {
     @Environment(\.openWindow) private var openWindow
     
     var body: some Scene {
-        // Menu Bar Extra (conditionally displayed based on AppDisplayLocation setting)
-        MenuBarExtra(
-            isInserted: Binding(
-                get: {
-                    appState.storage.data.appDisplayLocation == .menuBarOnly || appState.storage.data.appDisplayLocation == .both
-                },
-                set: { inserted in
-                    if inserted {
-                        appState.setDisplayLocation(appState.storage.data.appDisplayLocation == .notchOnly ? .both : .menuBarOnly)
-                    } else {
-                        appState.setDisplayLocation(.notchOnly)
-                    }
-                }
-            )
-        ) {
+        // Menu Bar Extra
+        MenuBarExtra {
             MenuBarView(appState: appState)
         } label: {
             HStack(spacing: 5) {
                 Image(systemName: appState.engine.state == .running ? "stopwatch.fill" : "stopwatch")
                 
-                if appState.engine.state != .idle {
+                if appState.storage.data.appDisplayLocation != .notchOnly && appState.engine.state != .idle {
                     Text(TimeFormatter.formatStopwatch(appState.engine.elapsedTime))
                         .font(.system(.body, design: .monospaced))
                         .monospacedDigit()

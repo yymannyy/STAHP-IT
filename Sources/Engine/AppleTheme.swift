@@ -118,7 +118,7 @@ public enum NotchGeometry {
     }
     
     public static func totalWidth(title: String? = nil, screen: NSScreen? = NSScreen.main) -> CGFloat {
-        let wingW = title != nil ? responsiveWingWidth(title: title!, screen: screen) : wingWidth(screen: screen)
+        let wingW = title.map { responsiveWingWidth(title: $0, screen: screen) } ?? wingWidth(screen: screen)
         return notchWidth(screen: screen) + (2 * wingW)
     }
 }

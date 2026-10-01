@@ -241,7 +241,8 @@ public final class StorageManager: ObservableObject {
     
     public init() {
         let fileManager = FileManager.default
-        let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? fileManager.temporaryDirectory
         let appFolder = appSupport.appendingPathComponent("StahpIt", isDirectory: true)
         
         try? fileManager.createDirectory(at: appFolder, withIntermediateDirectories: true)
