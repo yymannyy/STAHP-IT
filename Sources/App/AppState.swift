@@ -49,6 +49,39 @@ public final class AppState: ObservableObject {
         setupActiveAppTracking()
         setupLifecycleObservers()
         syncDisplayLocations()
+        applyAppIcon(storage.data.selectedAppIcon)
+    }
+    
+    public func setAppIcon(_ icon: AppIconChoice) {
+        storage.data.selectedAppIcon = icon
+        storage.save()
+        applyAppIcon(icon)
+    }
+    
+    public func applyAppIcon(_ icon: AppIconChoice) {
+        // 1. Try Bundle main resource URL
+        let nsName = (icon.rawValue as NSString).deletingPathExtension
+        let nsExt = (icon.rawValue as NSString).pathExtension
+        if let url = Bundle.main.url(forResource: nsName, withExtension: nsExt),
+           let img = NSImage(contentsOf: url) {
+            NSApplication.shared.applicationIconImage = img
+            return
+        }
+        
+        // 2. Try Bundle resourcePath
+        if let resPath = Bundle.main.resourcePath {
+            let path = (resPath as NSString).appendingPathComponent(icon.rawValue)
+            if let img = NSImage(contentsOfFile: path) {
+                NSApplication.shared.applicationIconImage = img
+                return
+            }
+        }
+        
+        // 3. Fallback to direct current working directory
+        if let img = NSImage(contentsOfFile: icon.rawValue) {
+            NSApplication.shared.applicationIconImage = img
+            return
+        }
     }
     
     public func setDisplayLocation(_ location: AppDisplayLocation) {

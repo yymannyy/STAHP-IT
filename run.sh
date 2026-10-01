@@ -20,8 +20,12 @@ if [ ! -f "$DIR/AppIcon.icns" ]; then
     echo "Warning: AppIcon.icns not found at $DIR/AppIcon.icns"
 fi
 
-# Copy icon to Resources
+# Copy primary and alternate icon assets to Resources
 cp "$DIR/AppIcon.icns" "$RESOURCES_DIR/AppIcon.icns"
+cp "$DIR/AppIcon.png" "$RESOURCES_DIR/AppIcon.png"
+cp "$DIR/stahpit-bluebg.png" "$RESOURCES_DIR/stahpit-bluebg.png"
+cp "$DIR/stahpit-lightbluebg.png" "$RESOURCES_DIR/stahpit-lightbluebg.png"
+cp "$DIR/stahpit-whitebg.png" "$RESOURCES_DIR/stahpit-whitebg.png"
 
 # Copy binary
 cp "$DIR/.build/release/StahpIt" "$MACOS_DIR/StahpIt"

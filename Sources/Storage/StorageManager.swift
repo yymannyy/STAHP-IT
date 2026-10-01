@@ -95,6 +95,26 @@ public enum AppDisplayLocation: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+public enum AppIconChoice: String, Codable, CaseIterable, Identifiable {
+    case primary = "AppIcon.png"
+    case blueBackground = "stahpit-bluebg.png"
+    case lightBlueBackground = "stahpit-lightbluebg.png"
+    case whiteBackground = "stahpit-whitebg.png"
+    
+    public var id: String { rawValue }
+    
+    public var displayName: String {
+        switch self {
+        case .primary: return "Classic Transparent"
+        case .blueBackground: return "Ocean Blue"
+        case .lightBlueBackground: return "Sky Blue"
+        case .whiteBackground: return "Clean White"
+        }
+    }
+    
+    public var previewFilename: String { rawValue }
+}
+
 public struct AppData: Codable {
     public var tasks: [TaskItem]
     public var sessions: [TimeSession]
@@ -110,6 +130,7 @@ public struct AppData: Codable {
     public var hudDisplayMode: HUDDisplayMode
     public var menuBarDisplayMode: MenuBarDisplayMode
     public var appDisplayLocation: AppDisplayLocation
+    public var selectedAppIcon: AppIconChoice
     public var hudScale: HUDScale
     public var glassStyle: GlassStyle
     public var autoMinimizeToEdge: Bool
@@ -141,6 +162,7 @@ public struct AppData: Codable {
         hudDisplayMode: HUDDisplayMode = .categoryOnly,
         menuBarDisplayMode: MenuBarDisplayMode = .iconAndTimer,
         appDisplayLocation: AppDisplayLocation = .notchOnly,
+        selectedAppIcon: AppIconChoice = .primary,
         hudScale: HUDScale = .standard,
         glassStyle: GlassStyle = .ultraThin,
         autoMinimizeToEdge: Bool = true,
@@ -171,6 +193,7 @@ public struct AppData: Codable {
         self.hudDisplayMode = hudDisplayMode
         self.menuBarDisplayMode = menuBarDisplayMode
         self.appDisplayLocation = appDisplayLocation
+        self.selectedAppIcon = selectedAppIcon
         self.hudScale = hudScale
         self.glassStyle = glassStyle
         self.autoMinimizeToEdge = autoMinimizeToEdge
@@ -192,7 +215,7 @@ public struct AppData: Codable {
         case tasks, sessions, activeTaskId, overlayPinned, overlayMode, screenAnchor
         case overlayPositionX, overlayPositionY, showMilliseconds, soundEnabled
         case showActiveAppName, hudDisplayMode, menuBarDisplayMode, appDisplayLocation
-        case hudScale, glassStyle
+        case selectedAppIcon, hudScale, glassStyle
         case autoMinimizeToEdge, autoPauseOnSleep, idleReminderMinutes, soundOnStartPause
         case soundOnSessionComplete, alwaysShowHours, flashMenuBarRunning, launchAtLogin
         case promptSessionNotesOnFinish, restoreSessionOnLaunch, autoResumeRunningOnLaunch
@@ -215,6 +238,7 @@ public struct AppData: Codable {
         self.hudDisplayMode = (try? container.decode(HUDDisplayMode.self, forKey: .hudDisplayMode)) ?? .categoryOnly
         self.menuBarDisplayMode = (try? container.decode(MenuBarDisplayMode.self, forKey: .menuBarDisplayMode)) ?? .iconAndTimer
         self.appDisplayLocation = (try? container.decode(AppDisplayLocation.self, forKey: .appDisplayLocation)) ?? .notchOnly
+        self.selectedAppIcon = (try? container.decode(AppIconChoice.self, forKey: .selectedAppIcon)) ?? .primary
         self.hudScale = (try? container.decode(HUDScale.self, forKey: .hudScale)) ?? .standard
         self.glassStyle = (try? container.decode(GlassStyle.self, forKey: .glassStyle)) ?? .ultraThin
         self.autoMinimizeToEdge = (try? container.decode(Bool.self, forKey: .autoMinimizeToEdge)) ?? true

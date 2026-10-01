@@ -228,6 +228,33 @@ private struct GeneralSettingsSection: View {
                 .padding(10)
             }
             
+            SettingHeader(title: "App Icon & Alternate Styles", subtitle: "Choose your preferred dock and system icon badge style.")
+            
+            GroupBox {
+                VStack(spacing: 12) {
+                    HStack(spacing: 10) {
+                        ForEach(AppIconChoice.allCases) { iconChoice in
+                            let isSelected = appState.storage.data.selectedAppIcon == iconChoice
+                            Button {
+                                withAnimation(AppleTheme.springSnappy) {
+                                    appState.setAppIcon(iconChoice)
+                                }
+                            } label: {
+                                AppIconThumbnailView(choice: iconChoice, isSelected: isSelected)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    
+                    Text("💡 Selected icon immediately updates the macOS Dock, App Switcher (⌘Tab), and system instances.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, 2)
+                }
+                .padding(10)
+            }
+            
             SettingHeader(title: "General Preferences", subtitle: "Configure launch, menu bar display, and session completion workflow.")
             
             GroupBox {
@@ -290,6 +317,84 @@ private struct GeneralSettingsSection: View {
                 .padding(8)
             }
         }
+    }
+}
+
+// MARK: - App Icon Visual Preview Thumbnail
+private struct AppIconThumbnailView: View {
+    let choice: AppIconChoice
+    let isSelected: Bool
+    
+    private var iconImage: NSImage? {
+        let nsName = (choice.rawValue as NSString).deletingPathExtension
+        let nsExt = (choice.rawValue as NSString).pathExtension
+        if let url = Bundle.main.url(forResource: nsName, withExtension: nsExt),
+           let img = NSImage(contentsOf: url) {
+            return img
+        }
+        if let resPath = Bundle.main.resourcePath {
+            let path = (resPath as NSString).appendingPathComponent(choice.rawValue)
+            if let img = NSImage(contentsOfFile: path) {
+                return img
+            }
+        }
+        return NSImage(contentsOfFile: choice.rawValue)
+    }
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(Color.primary.opacity(0.04))
+                
+                if let img = iconImage {
+                    Image(nsImage: img)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 52, height: 52)
+                        .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
+                        .shadow(color: Color.black.opacity(0.18), radius: 4, x: 0, y: 2)
+                } else {
+                    Image(systemName: "app.fill")
+                        .font(.system(size: 36))
+                        .foregroundColor(AppleTheme.actionBlue)
+                }
+            }
+            .frame(width: 66, height: 66)
+            
+            VStack(spacing: 2) {
+                Text(choice.displayName)
+                    .font(.system(size: 11, weight: isSelected ? .bold : .medium))
+                    .foregroundColor(isSelected ? .primary : .secondary)
+                    .lineLimit(1)
+                
+                if isSelected {
+                    HStack(spacing: 3) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 9.5))
+                            .foregroundColor(AppleTheme.actionBlue)
+                        Text("Active")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundColor(AppleTheme.actionBlue)
+                    }
+                } else {
+                    Text("Select")
+                        .font(.system(size: 9))
+                        .foregroundColor(.secondary.opacity(0.6))
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(isSelected ? AppleTheme.actionBlue.opacity(0.12) : Color.primary.opacity(0.03))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(isSelected ? AppleTheme.actionBlue.opacity(0.7) : Color.clear, lineWidth: 1.5)
+                )
+        )
     }
 }
 
