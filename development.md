@@ -33,8 +33,9 @@
 ```
 STAHP IT!/
 ├── Package.swift                             # Swift Package Manager manifest
-├── generate_icon.swift                       # CoreGraphics programmatic macOS AppIcon generator
-├── run.sh                                    # Release build, icon compilation & launch script
+├── AppIcon.icns                              # macOS multi-density application icon
+├── AppIcon.png                               # High-resolution transparent application icon
+├── run.sh                                    # Release build, icon packaging & launch script
 ├── README.md                                 # User & developer documentation
 ├── LICENSE                                   # MIT License
 └── Sources/
@@ -111,7 +112,7 @@ STAHP IT!/
 - [x] Custom task category manager with custom colors, SF Symbols, and target goals.
 - [x] Frontmost active application tracking & customizable HUD display modes.
 - [x] Formula-safe CSV and Markdown table session history export.
-- [x] Programmatic CoreGraphics designer macOS app icon (`generate_icon.swift`).
+- [x] High-resolution transparent macOS app icon (`AppIcon.icns` & `AppIcon.png`).
 - [x] GitHub repository setup and **v0.5** release published with binary bundle assets.
 
 ---
@@ -122,8 +123,4 @@ STAHP IT!/
 # Compile and launch the release bundle
 chmod +x run.sh
 ./run.sh
-
-# Programmatically generate AppIcon.icns
-swift generate_icon.swift
-iconutil -c icns AppIcon.iconset -o AppIcon.icns
 ```

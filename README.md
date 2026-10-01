@@ -84,7 +84,7 @@ chmod +x run.sh
 ./run.sh
 ```
 
-The script builds the release binary, compiles the designer icon asset catalog into `AppIcon.icns`, generates the `.app` bundle at `build/STAHP IT!.app`, and launches the application.
+The script builds the release binary, bundles `AppIcon.icns`, generates the `.app` bundle at `build/STAHP IT!.app`, and launches the application.
 
 ---
 
@@ -93,8 +93,9 @@ The script builds the release binary, compiles the designer icon asset catalog i
 ```
 STAHP IT!/
 ├── Package.swift                     # Swift Package Manager manifest
-├── generate_icon.swift               # CoreGraphics programmatic macOS AppIcon generator
-├── run.sh                            # Release build, icon compilation & launch script
+├── AppIcon.icns                      # macOS multi-density application icon
+├── AppIcon.png                       # High-resolution transparent application icon
+├── run.sh                            # Release build, icon packaging & launch script
 └── Sources/
     ├── App/
     │   ├── StahpItApp.swift          # Main App lifecycle & MenuBarExtra scene

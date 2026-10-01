@@ -17,9 +17,7 @@ mkdir -p "$RESOURCES_DIR"
 
 # Ensure AppIcon.icns exists
 if [ ! -f "$DIR/AppIcon.icns" ]; then
-    echo "Generating AppIcon.icns..."
-    swift "$DIR/generate_icon.swift"
-    iconutil -c icns "$DIR/AppIcon.iconset" -o "$DIR/AppIcon.icns"
+    echo "Warning: AppIcon.icns not found at $DIR/AppIcon.icns"
 fi
 
 # Copy icon to Resources
