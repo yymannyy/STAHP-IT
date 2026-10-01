@@ -6,7 +6,7 @@
 ---
 
 <p align="center">
-  <img src="AppIcon.icns" alt="STAHP IT! Icon" width="160" height="160" />
+  <img src="AppIcon.png" alt="STAHP IT! Icon" width="160" height="160" />
 </p>
 
 <p align="center">
