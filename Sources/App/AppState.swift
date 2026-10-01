@@ -12,7 +12,7 @@ public final class AppState: ObservableObject {
     // UI state with direct synchronization to Overlay Window Controller
     @Published public var isOverlayVisible: Bool = true {
         didSet {
-            OverlayWindowController.shared.toggle(visible: isOverlayVisible)
+            OverlayWindowController.shared.toggle(visible: isOverlayVisible, appState: self)
         }
     }
     @Published public var isFinishingSession: Bool = false
@@ -48,7 +48,6 @@ public final class AppState: ObservableObject {
         
         setupActiveAppTracking()
         setupLifecycleObservers()
-        syncDisplayLocations()
         applyAppIcon(storage.data.selectedAppIcon)
     }
     

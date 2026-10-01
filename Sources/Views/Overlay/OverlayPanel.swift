@@ -238,9 +238,9 @@ public final class OverlayWindowController: ObservableObject {
         }
     }
     
-    public func show() {
-        if panel == nil {
-            setup(appState: AppState.shared)
+    public func show(appState: AppState? = nil) {
+        if panel == nil, let appState = appState {
+            setup(appState: appState)
         }
         panel?.orderFrontRegardless()
     }
@@ -249,9 +249,9 @@ public final class OverlayWindowController: ObservableObject {
         panel?.orderOut(nil)
     }
     
-    public func toggle(visible: Bool) {
+    public func toggle(visible: Bool, appState: AppState? = nil) {
         if visible {
-            show()
+            show(appState: appState)
         } else {
             hide()
         }

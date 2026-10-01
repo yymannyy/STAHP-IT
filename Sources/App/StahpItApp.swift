@@ -12,6 +12,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Setup Floating Overlay Window (Top Notch / Screen Edge)
         OverlayWindowController.shared.setup(appState: appState)
         
+        // Sync display location (Notch vs Menu Bar)
+        appState.syncDisplayLocations()
+        
         // Setup Carbon & Local Hotkeys
         HotkeyManager.shared.setup(appState: appState)
     }
