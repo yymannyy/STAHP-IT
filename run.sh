@@ -73,6 +73,6 @@ codesign --force --deep --sign - "$APP_DIR"
 
 echo "Launching STAHP IT!..."
 killall StahpIt 2>/dev/null || true
-nohup "$MACOS_DIR/StahpIt" > /dev/null 2>&1 &
-disown
+sleep 0.5
+open "$APP_DIR"
 echo "STAHP IT! launched successfully."
