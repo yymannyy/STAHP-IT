@@ -93,8 +93,11 @@ The script builds the release binary, bundles `AppIcon.icns`, generates the `.ap
 ```
 STAHP IT!/
 ├── Package.swift                     # Swift Package Manager manifest
-├── AppIcon.icns                      # macOS multi-density application icon
-├── AppIcon.png                       # High-resolution transparent application icon
+├── AppIcon.icns                      # macOS multi-density application icon bundle
+├── AppIcon.png                       # Primary high-resolution transparent application icon
+├── stahpit-bluebg.png                # Alternate icon variant (Ocean Blue background)
+├── stahpit-lightbluebg.png           # Alternate icon variant (Sky Blue background)
+├── stahpit-whitebg.png               # Alternate icon variant (Clean White background)
 ├── run.sh                            # Release build, icon packaging & launch script
 └── Sources/
     ├── App/

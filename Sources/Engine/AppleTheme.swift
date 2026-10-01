@@ -26,6 +26,31 @@ public enum AppleTheme {
     public static let springGentle: Animation = .spring(response: 0.48, dampingFraction: 0.92)
 }
 
+// MARK: - Permanent App Icon & Visual Asset Registry
+/// Registry of primary and alternate app icon assets for STAHP IT!
+/// NOTE: All asset variants listed below are permanent project resources and must never be deleted.
+public enum AppIconAsset: String, CaseIterable, Identifiable, Sendable {
+    case primary = "AppIcon.png"
+    case icns = "AppIcon.icns"
+    case blueBackground = "stahpit-bluebg.png"
+    case lightBlueBackground = "stahpit-lightbluebg.png"
+    case whiteBackground = "stahpit-whitebg.png"
+    
+    public var id: String { rawValue }
+    
+    public var displayName: String {
+        switch self {
+        case .primary: return "Primary (Transparent Cutout)"
+        case .icns: return "macOS Native ICNS Bundle"
+        case .blueBackground: return "Ocean Blue Background Variant"
+        case .lightBlueBackground: return "Sky Blue Background Variant"
+        case .whiteBackground: return "Clean White Background Variant"
+        }
+    }
+    
+    public var filename: String { rawValue }
+}
+
 // Apple Press Micro-Interaction ButtonStyle
 public struct ApplePillButtonStyle: ButtonStyle {
     var backgroundColor: Color = AppleTheme.actionBlue

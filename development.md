@@ -33,8 +33,11 @@
 ```
 STAHP IT!/
 ├── Package.swift                             # Swift Package Manager manifest
-├── AppIcon.icns                              # macOS multi-density application icon
-├── AppIcon.png                               # High-resolution transparent application icon
+├── AppIcon.icns                              # macOS multi-density application icon bundle
+├── AppIcon.png                               # Primary high-resolution transparent application icon
+├── stahpit-bluebg.png                        # Permanent alternate icon (Ocean Blue background)
+├── stahpit-lightbluebg.png                   # Permanent alternate icon (Sky Blue background)
+├── stahpit-whitebg.png                       # Permanent alternate icon (Clean White background)
 ├── run.sh                                    # Release build, icon packaging & launch script
 ├── README.md                                 # User & developer documentation
 ├── LICENSE                                   # MIT License
@@ -112,7 +115,7 @@ STAHP IT!/
 - [x] Custom task category manager with custom colors, SF Symbols, and target goals.
 - [x] Frontmost active application tracking & customizable HUD display modes.
 - [x] Formula-safe CSV and Markdown table session history export.
-- [x] High-resolution transparent macOS app icon (`AppIcon.icns` & `AppIcon.png`).
+- [x] High-resolution transparent macOS app icon (`AppIcon.icns` & `AppIcon.png`) & permanent alternate icon variants (`stahpit-bluebg.png`, `stahpit-lightbluebg.png`, `stahpit-whitebg.png`).
 - [x] GitHub repository setup and **v0.5** release published with binary bundle assets.
 
 ---
