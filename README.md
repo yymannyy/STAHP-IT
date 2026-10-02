@@ -11,11 +11,14 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-macOS%2014.0%2B-black?style=for-the-badge&logo=apple" alt="macOS 14.0+" />
+  <img src="https://img.shields.io/badge/Status-In%20Active%20Development%20(v0.6)-F59E0B?style=for-the-badge&logo=git" alt="Status: In Active Development" />
   <img src="https://img.shields.io/badge/Swift-6.0-F05138?style=for-the-badge&logo=swift&logoColor=white" alt="Swift 6.0" />
   <img src="https://img.shields.io/badge/Display-ProMotion%20120Hz-0071E3?style=for-the-badge" alt="ProMotion 120Hz" />
-  <img src="https://img.shields.io/badge/OLED-True%20Black%20%23000000-000000?style=for-the-badge" alt="True Black" />
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="MIT License" />
 </p>
+
+> [!NOTE]
+> **🚧 Active Development**: **STAHP IT!** is currently under active development (`v0.6`). APIs, features, and UI interactions are evolving rapidly. Feedback and issue reports are warmly welcomed!
 
 ---
 

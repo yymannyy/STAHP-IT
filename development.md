@@ -116,7 +116,7 @@ STAHP IT!/
 - [x] Frontmost active application tracking & customizable HUD display modes.
 - [x] Formula-safe CSV and Markdown table session history export.
 - [x] High-resolution transparent macOS app icon (`AppIcon.icns` & `AppIcon.png`) & permanent alternate icon variants (`stahpit-bluebg.png`, `stahpit-lightbluebg.png`, `stahpit-whitebg.png`).
-- [x] GitHub repository setup and **v0.5** release published with binary bundle assets.
+- [x] GitHub repository setup and **v0.6** beta release published with binary bundle assets.
 
 ---
 
