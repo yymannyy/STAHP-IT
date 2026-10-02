@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import UserNotifications
 
 @MainActor
 public final class AppState: ObservableObject {
@@ -49,6 +50,7 @@ public final class AppState: ObservableObject {
         setupActiveAppTracking()
         setupLifecycleObservers()
         applyAppIcon(storage.data.selectedAppIcon)
+        NotificationManager.shared.requestAuthorizationIfNeeded()
     }
     
     public func setAppIcon(_ icon: AppIconChoice) {
@@ -108,6 +110,14 @@ public final class AppState: ObservableObject {
                 guard let self = self else { return }
                 if self.engine.state == .running {
                     self.saveCurrentSessionSnapshot()
+                    
+                    // Check if continuous task idle reminder should fire
+                    let taskName = self.activeTask?.title ?? "Unknown Task"
+                    NotificationManager.shared.checkAndNotifyIfNeeded(
+                        elapsedTime: self.engine.elapsedTime,
+                        reminderMinutes: self.storage.data.idleReminderMinutes,
+                        taskName: taskName
+                    )
                 }
             }
         
@@ -213,11 +223,15 @@ public final class AppState: ObservableObject {
             storage.data.activeTaskId = first.id
             storage.save()
         }
+        let isResuming = engine.state == .paused
         engine.start()
+        SoundManager.shared.play(isResuming ? .resume : .start, data: storage.data)
+        NotificationManager.shared.resetReminderFlag()
     }
     
     public func pause() {
         engine.pause()
+        SoundManager.shared.play(.pause, data: storage.data)
     }
     
     public func toggleTimer() {
@@ -231,6 +245,7 @@ public final class AppState: ObservableObject {
     public func recordLap() {
         engine.recordLap()
         saveCurrentSessionSnapshot()
+        SoundManager.shared.play(.lap, data: storage.data)
     }
     
     /// Stops the timer, packages the session, and triggers the session completion note dialog
@@ -263,6 +278,7 @@ public final class AppState: ObservableObject {
         pendingSession = session
         finishingNotes = ""
         isFinishingSession = true
+        SoundManager.shared.play(.sessionComplete, data: storage.data)
     }
     
     public func finishCurrentSessionAndSwitch(to newTask: TaskItem) {
